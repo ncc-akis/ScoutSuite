@@ -18,6 +18,11 @@ from ScoutSuite.output.utils import get_filename
 from ScoutSuite.providers import get_provider
 from ScoutSuite.providers.base.authentication_strategy_factory import get_authentication_strategy
 
+# Python 3.10 moved the Callable class from collections to collections.abc.
+# The following lines are provided for compatibility.
+import collections
+if not hasattr(collections, 'Callable') and hasattr(collections, 'abc') and hasattr(collections.abc, 'Callable'):
+    collections.Callable = collections.abc.Callable
 
 def run_from_cli():
     parser = ScoutSuiteArgumentParser()
