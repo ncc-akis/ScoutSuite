@@ -14,6 +14,7 @@ class AzureProvider(BaseProvider):
     def __init__(self,
                  subscription_ids=[], all_subscriptions=None,
                  report_dir=None, timestamp=None, services=None, skipped_services=None,
+                 sampling_config=None,
                  result_format='json',
                  **kwargs):
         services = [] if services is None else services
@@ -42,6 +43,7 @@ class AzureProvider(BaseProvider):
             self.account_id = 'undefined'
 
         self.services = AzureServicesConfig(self.credentials,
+                                            sampling_config=sampling_config,
                                             programmatic_execution=self.programmatic_execution,
                                             subscription_ids=self.subscription_ids,
                                             all_subscriptions=self.all_subscriptions)

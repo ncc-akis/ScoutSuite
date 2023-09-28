@@ -34,6 +34,7 @@ class AzureServicesConfig(BaseServicesConfig):
     def __init__(self,
                  credentials: AzureCredentials = None,
                  subscription_ids=[], all_subscriptions=None,
+                 sampling_config=None,
                  programmatic_execution=None,
                  **kwargs):
 
@@ -41,6 +42,7 @@ class AzureServicesConfig(BaseServicesConfig):
 
         facade = AzureFacade(credentials,
                              subscription_ids, all_subscriptions,
+                             sampling_config,
                              programmatic_execution)
 
         self.aad = AAD(facade)

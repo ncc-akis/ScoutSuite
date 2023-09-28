@@ -28,7 +28,9 @@ class Vaults(AzureResources):
             raw_keys = await self.facade.keyvault.get_keys(self.subscription_id, resource_group_name, keyvault_name)
             # Retrieve a list of detailed key objects, one by one. In order to stay within
             # reasonable resource limits, only do this for a small number of keys per vault.
-            key_detailed_names = list(islice((k.name for k in raw_keys if k.attributes.enabled), self.KEY_FETCH_LIMIT))
+            sampling = self.facade.sampling_config.concerning(object_type='keyvault:key')
+            key_detailed_names = [k.name for k in raw_keys if k.attributes.enabled]
+            key_detailed_names = key_detailed_names[0:sampling.get_sample_count(len(key_detailed_names))]
             raw_key_details = await self.facade.keyvault.get_detailed_keys(self.subscription_id, resource_group_name, keyvault_name, key_detailed_names)
             raw_key_details = dict((k.id, k) for k in raw_key_details)
             for raw_key in raw_keys:

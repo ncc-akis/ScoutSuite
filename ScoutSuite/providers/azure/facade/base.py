@@ -1,3 +1,4 @@
+from ScoutSuite.core.sampling import SamplingConfig
 from ScoutSuite.providers.azure.authentication_strategy import AzureCredentials
 from ScoutSuite.providers.azure.facade.aad import AADFacade
 from ScoutSuite.providers.azure.facade.rbac import RBACFacade
@@ -38,10 +39,12 @@ class AzureFacade:
     def __init__(self,
                  credentials: AzureCredentials,
                  subscription_ids=[], all_subscriptions=False,
+                 sampling_config = None,
                  programmatic_execution=False):
 
         self.credentials = credentials
         self.programmatic_execution = programmatic_execution
+        self.sampling_config = sampling_config or SamplingConfig()
 
         self.subscription_list = []
         self.subscription_ids = subscription_ids

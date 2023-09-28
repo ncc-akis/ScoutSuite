@@ -12,6 +12,7 @@ from ScoutSuite.core.console import set_logger_configuration, print_info, print_
 from ScoutSuite.core.exceptions import RuleExceptions
 from ScoutSuite.core.processingengine import ProcessingEngine
 from ScoutSuite.core.ruleset import Ruleset
+from ScoutSuite.core.sampling import SamplingConfig, SamplingConfigRule
 from ScoutSuite.core.server import Server
 from ScoutSuite.output.html import ScoutReport
 from ScoutSuite.output.utils import get_filename
@@ -74,6 +75,7 @@ def run_from_cli():
                    regions=args.get('regions'),
                    excluded_regions=args.get('excluded_regions'),
                    fetch_local=args.get('fetch_local'), update=args.get('update'),
+                   sampling_config_rules=args.get('sampling_config'),
                    max_rate=args.get('max_rate'),
                    ip_ranges=args.get('ip_ranges'), ip_ranges_name_key=args.get('ip_ranges_name_key'),
                    ruleset=args.get('ruleset'), exceptions=args.get('exceptions'),
@@ -123,6 +125,7 @@ def run(provider,
         regions=[],
         excluded_regions=[],
         fetch_local=False, update=False,
+        sampling_config_rules=[],
         max_rate=None,
         ip_ranges=[], ip_ranges_name_key='name',
         ruleset='default.json', exceptions=None,
@@ -180,6 +183,7 @@ async def _run(provider,
                regions,
                excluded_regions,
                fetch_local, update,
+               sampling_config_rules,
                ip_ranges, ip_ranges_name_key,
                ruleset, exceptions,
                force_write,
@@ -235,6 +239,15 @@ async def _run(provider,
         print_exception(f'Authentication failure: {e}')
         return 101
 
+    try:
+        sampling = SamplingConfig()
+        for sampling_config_rule in sampling_config_rules:
+            sampling_rule = SamplingConfigRule(sampling_config_rule)
+            sampling.rules.append(sampling_rule)
+    except:
+        print_exception(f'Error parsing sampling configuration: {e}')
+        return 110
+
     # Create a cloud provider object
     try:
         cloud_provider = get_provider(provider=provider,
@@ -257,6 +270,7 @@ async def _run(provider,
                                       timestamp=timestamp,
                                       services=services,
                                       skipped_services=skipped_services,
+                                      sampling_config=sampling,
                                       programmatic_execution=programmatic_execution,
                                       credentials=credentials)
     except Exception as e:
